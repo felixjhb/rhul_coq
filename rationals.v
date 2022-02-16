@@ -269,7 +269,7 @@ Section Integers.
     Lemma swap_sides_eqn_sum : forall i j k, i = j - k <-> i + k = j.
     Proof.
         split. intro. apply f_equal with (f := fun t => t + k) in H.
-        rewrite <- add_assoc in H. rewrite H. rewrite add_comm, <- add_zero_r.
+        rewrite <- add_assoc in H. rewrite H, add_comm, <- add_zero_r.
         symmetry. rewrite add_comm. apply add_normalise_r. rewrite add_comm, add_inv_r.
         reflexivity.
         intro. apply f_equal with (f := fun t => t - k) in H.
