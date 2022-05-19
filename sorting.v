@@ -531,6 +531,8 @@ Section Sorting.
     split; try split; trivial.
   Qed.
   
+(* The following commented-out code is a work in progress.
+
   Lemma perm''_skip : forall (x y : list) (t : A),
     Permutation'' x y -> Permutation'' (cons_list t x) (cons_list t y).
   Proof.
@@ -583,6 +585,7 @@ Section Sorting.
     split; intro. induction y.
     apply perm'_of_nil in H. rewrite H.
   Qed.
+  *)
   
   Inductive Sorted : list -> Prop :=
   | nil_sorted : Sorted (nil_list)
