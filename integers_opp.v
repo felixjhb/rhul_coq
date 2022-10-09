@@ -2,22 +2,16 @@ Section Integers.
   Inductive Int : Set :=
   | zero : Int
   | succ : Int -> Int
-  | pred : Int -> Int.
+  | opp : Int -> Int.
   
   Declare Scope Int_scope.
   Bind Scope Int_scope with Int.
   Open Scope Int_scope.
   Notation "- n" := (opp n) : Int_scope.
   
-  Axiom pred_succ_equiv : forall (n : Int), pred (succ n) = n.
-  
-  Axiom succ_pred_equiv : forall (n : Int), succ (pred n) = n.
-  
   Axiom opp_zero : opp zero = zero.
-  
-  Axiom opp_succ : forall (n : Int), opp (succ n) = pred (opp n).
-  
-  Axiom opp_pred : forall (n : Int), opp (pred n) = succ (opp n).
+
+  Axiom opp_opp : forall n, - - n = n.
   
   Lemma equiv_implies_equiv_succ : 
     forall (n m : Int), n=m -> (succ n) = (succ m).
@@ -30,52 +24,54 @@ Section Integers.
   Lemma equiv_succ_implies_equiv : 
     forall (n m : Int), (succ n) = (succ m) -> n = m.
   Proof.
-    intros. apply f_equal with (f := fun t => pred t) in H.
-    rewrite pred_succ_equiv in H. 
-    symmetry in H. rewrite pred_succ_equiv in H.
-    symmetry in H. apply H.
+    intros. inversion H. reflexivity.
   Qed.
   
   Fixpoint add (n m : Int) : Int :=
   match n with
   | zero => m
   | succ n' => succ (add n' m)
-  | pred n' => pred (add n' m)
-  | opp n' => - (add n' (opp m))
+  | opp n' => - (add n' (- m))
   end.
   
   Infix "+" := add (at level 50, left associativity) : Int_scope.
   Notation "n - m" := (add n (opp m)) : Int_scope.
   
-  Lemma add_zero : forall (n : Int), n + zero = n.
+  Lemma add_zero_l : forall (n : Int), zero + n = n.
   Proof.
-    intros. induction n.
-    simpl. reflexivity.
-    simpl. rewrite IHn. reflexivity.
-    simpl. apply f_equal with (f := fun t => pred t). apply IHn.
-    simpl. rewrite opp_zero. rewrite IHn. reflexivity.
+    trivial.
   Qed.
-  
-  Lemma opp_opp : forall (n : Int), opp (opp n) = n.
+
+  Lemma add_zero_r : forall (n : Int), n + zero = n.
   Proof.
-    intro. induction n. repeat rewrite opp_zero. reflexivity.
-    rewrite opp_succ. rewrite opp_pred. rewrite IHn. reflexivity.
-    rewrite opp_pred. rewrite opp_succ. rewrite IHn. reflexivity.
-    rewrite IHn. reflexivity.
+    intros. induction n; simpl.
+    - reflexivity.
+    - rewrite IHn. reflexivity.
+    - rewrite opp_zero. rewrite IHn. reflexivity.
   Qed.
   
   Lemma opp_distr : forall (n m : Int), opp (n + m) = (opp n) + (opp m).
   Proof.
-    intros. induction n. simpl. rewrite opp_opp. reflexivity.
-    rewrite opp_succ. rewrite <- opp_succ. simpl. rewrite opp_opp. reflexivity.
-    rewrite opp_pred. simpl. rewrite opp_opp. rewrite opp_pred. reflexivity.
-    simpl. repeat rewrite opp_opp. reflexivity.
+    intros. induction n; simpl; repeat rewrite opp_opp; try reflexivity.
   Qed.
   
+  Lemma add_succ_l : forall n m, succ n + m = succ (n + m).
+  Proof.
+    intros. simpl. reflexivity.
+  Qed.
+
+  Lemma add_succ_r : forall n m, n + succ m = succ (n + m).
+  Proof.
+    intros. induction m; simpl.
+    - rewrite add_zero_r.
+  Qed.
+
   Theorem add_associativity : 
     forall (i j k : Int), i + (j + k) = (i + j) + k.
   Proof.
-    intros. induction k. repeat rewrite add_zero. reflexivity.
+    intros. induction k; simpl.
+    - repeat rewrite add_zero_r. reflexivity.
+    - simpl.  
     
   
   Theorem add_associativity : 

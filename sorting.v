@@ -438,7 +438,7 @@ Section Sorting.
     apply perm'_skip. assumption.
     apply perm'_swap.
     apply (perm'_trans x y z); assumption.
-  Qed. (*Proving the reverse isn't possible with Permutation'*)
+  Qed. (*I haven't been able to prove that the reverse isn't possible*)
   
   Fixpoint contains {T : Type} (x : list) (t : T) : Prop :=
   match x with
